@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Blog Posts</h2>
+    <a href="{% url 'blogs:blog_create' %}" class="btn btn-primary">Create New Post</a>
+  </div>
+
+  {% for blog in blogs %}
+    <div class="card mb-4 shadow-sm">
+      <div class="row g-0">
+        {% if blog.image %}
+        <div class="col-md-4">
+          <a href="{% url 'blogs:blog_detail' blog.slug %}">
+            <img src="{{ blog.image.url }}" class="img-fluid rounded-start" alt="Blog Image">
+          </a>
+        </div>
+        {% endif %}
+        <div class="{% if blog.image %}col-md-8{% else %}col-md-12{% endif %}">
+          <div class="card-body">
+            <h5 class="card-title">
+              <a href="{% url 'blogs:blog_detail' blog.slug %}" class="text-decoration-none text-dark">
+                {{ blog.title }}
+              </a>
+            </h5>
+            <p class="card-text text-muted">
+              By {{ blog.author.user.username }} | {{ blog.created_at|date:"F d, Y" }}
+            </p>
+            <p class="card-text">{{ blog.content|truncatewords:25 }}</p>
+            <a href="{% url 'blogs:blog_detail' blog.slug %}" class="btn btn-outline-primary btn-sm">
+              Read More
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p>No blog posts found.</p>
+  {% endfor %}
+</div>
+{% endblock %}

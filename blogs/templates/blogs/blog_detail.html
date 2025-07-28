@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container my-4">
+  <!-- Blog Title and Info -->
+  <h2>{{ blog.title }}</h2>
+  <p class="text-muted">
+    By <strong>{{ blog.author.user.username }}</strong> |
+    Published on {{ blog.published_at|date:"F d, Y" }}
+  </p>
+
+  <!-- Blog Image -->
+  {% if blog.image %}
+    <img src="{{ blog.image.url }}" class="img-fluid im my-3" alt="Blog Image">
+  {% endif %}
+
+  <!-- Blog Content -->
+  <p>{{ blog.content|linebreaks }}</p>
+
+  {% if blog.author == request.user.author or request.user.is_superuser %}
+    <a href="{% url 'blogs:blog_edit' blog.slug %}" class="btn btn-warning btn-sm">Edit</a>
+    <a href="{% url 'blogs:blog_delete' blog.slug %}" class="btn btn-danger btn-sm">Delete</a>
+  {% endif %}
+
+  <hr>
+
+  <!-- Comments Section -->
+  <h4>Comments</h4>
+
+  {% for comment in comments %}
+    <div class="border p-3 mb-3">
+      <strong>{{ comment.author.user.username }}</strong>: {{ comment.content }}
+
+      <!-- Reply Button -->
+      <a href="#" class="reply-toggle text-primary ms-2" data-id="{{ comment.id }}">Reply</a>
+
+      <!-- Replies -->
+      {% for reply in comment.replies.all %}
+        <div class="border-start ps-3 mt-2">
+          <strong>{{ reply.author.user.username }}</strong>: {{ reply.content }}
+        </div>
+      {% endfor %}
+
+      <!-- Hidden Reply Form for Each Comment -->
+      <form method="post" class="reply-form mt-3 d-none" id="reply-form-{{ comment.id }}">
+        {% csrf_token %}
+        <input type="hidden" name="parent_id" value="{{ comment.id }}">
+        {{ comment_form.as_p }}
+        <button type="submit" class="btn btn-sm btn-secondary">Post Reply</button>
+      </form>
+    </div>
+  {% empty %}
+    <p>No comments yet. Be the first to comment!</p>
+  {% endfor %}
+
+  <hr>
+
+  <!-- New Top-level Comment -->
+  <h5>Leave a Comment</h5>
+  <form method="post">
+    {% csrf_token %}
+    {{ comment_form.as_p }}
+    <button type="submit" class="btn btn-primary">Post Comment</button>
+  </form>
+</div>
+
+<!-- JavaScript to Toggle Reply Forms -->
+<script>
+  document.querySelectorAll('.reply-toggle').forEach(link => {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      const commentId = this.getAttribute('data-id');
+      const form = document.getElementById('reply-form-' + commentId);
+      form.classList.toggle('d-none');
+    });
+  });
+</script>
+
+{% endblock %}

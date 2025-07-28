@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}Blog{% endblock %}</title>
+    <link
+    href = "{% static 'css/bootstrap.min.css' %}"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+      <a class="navbar-brand" href="{% url 'blogs:blog_list' %}">Inkwell</a>
+      <div class="ms-auto">
+        {% if user.is_authenticated %}
+        <span class="text-white me-3">Hello, {{ user.username }}</span>
+       <form method="post" action="{% url 'account:logout' %}" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-light p-0 m-0 align-baseline" style="color: #fff;">
+            Logout
+        </button>
+        </form>
+
+        >
+        {% else %}
+        <a
+          href="{% url 'account:login' %}"
+          class="btn btn-outline-light btn-sm me-2"
+          >Login</a
+        >
+        <a
+          href="{% url 'account:register' %}"
+          class="btn btn-outline-light btn-sm"
+          >Register</a
+        >
+        {% endif %}
+      </div>
+    </nav>
+
+    <div class="container py-4">
+      {% if messages %} {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %} {% endif %} {% block content %}{% endblock %}
+    </div>
+  </body>
+</html>
