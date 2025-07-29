@@ -69,7 +69,9 @@ class BlogPost(TimestampModel):
     excerpt = models.CharField(max_length=500, blank=True, null=True)
     is_published = models.BooleanField(default=False)
     published_at = models.DateTimeField(null=True, blank=True)
-    status = models.CharField(choices=Status.choices, default=Status.DRAFT)
+    status = models.CharField(
+        choices=Status.choices, default=Status.DRAFT, max_length=20
+    )
     objects = models.Manager()
     publishes = PublishManger()
 

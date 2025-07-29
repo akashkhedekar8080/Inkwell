@@ -75,7 +75,7 @@ class BlogListView(ListView):
     template_name = "blogs/blog_post_list.html"
     context_object_name = "blogs"
     ordering = ["-created_at"]
-    paginate_by = 5
+    paginate_by = 2
 
 
 @method_decorator(login_required, name="dispatch")
